@@ -1,4 +1,4 @@
-package com.pproduct.parse;
+package com.pproduct.datasource.parse;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
