@@ -8,6 +8,7 @@ import com.parse.ParseQuery;
 import java.util.List;
 
 import com.pproduct.datasource.core.ListDataSource;
+import com.pproduct.datasource.core.LogUtils;
 import com.pproduct.datasource.core.fetch_result.BaseFetchResult;
 import com.pproduct.datasource.core.listeners.DataCallback;
 import com.pproduct.datasource.core.listeners.Fetch;
@@ -24,8 +25,10 @@ public class ParseOnlineQueryFetch implements Fetch {
         this.query = query;
     }
     @Override
-    public void fetchOnline(ListDataSource.Paging paging, final DataCallback callback){
+    public void fetchOnline(ListDataSource.Paging paging, final DataCallback callback) {
+        LogUtils.logi("perform fetch query");
         if(paging!=null) {
+            LogUtils.logi("paging: s/l"+paging.getSkip()+"/"+paging.getLimit());
             query.setSkip(paging.getSkip());
             query.setLimit(paging.getLimit());
         }
