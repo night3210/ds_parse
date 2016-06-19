@@ -30,16 +30,13 @@ public class ParseFetch implements Fetch {
     }
     @Override
     public void fetchOnline(ListDataSource.Paging paging, final DataCallback callback) {
-        LogUtils.logw("perform fetch query");
         if(paging!=null) {
-            LogUtils.logw("paging: s/l"+paging.getSkip()+"/"+paging.getLimit());
             query.setSkip(paging.getSkip());
             query.setLimit(paging.getLimit());
         }
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List objects, ParseException e) {
-                LogUtils.logw("got results/online");
                 if(e==null) {
                     callback.onSuccess(objects);
                     pinObjects(objects);
@@ -52,14 +49,12 @@ public class ParseFetch implements Fetch {
     @Override
     public void fetchOffline(final DataCallback callback) {
         ParseQuery offlineQuery=new ParseQuery(query);
-        LogUtils.logw("perform offline fetch query");
         offlineQuery.fromPin(mPinName);
         offlineQuery.setSkip(0);
         offlineQuery.setLimit(100);
         offlineQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                LogUtils.logw("got results/offline");
                 if(e==null)
                     callback.onSuccess(objects);
                 else
@@ -75,19 +70,15 @@ public class ParseFetch implements Fetch {
 
     }
     private void pinObjects(final List objects){
-        LogUtils.logw("in");
         ParseObject.unpinAllInBackground(mPinName, new DeleteCallback() {
             @Override
             public void done(ParseException e) {
-                LogUtils.logw("unpin done");
                 if(e!=null) {
                     e.printStackTrace();
                 }
-                LogUtils.logw("begin pin");
                 ParseObject.pinAllInBackground(mPinName, objects, new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
-                        LogUtils.logw("pin done");
                         if(e!=null)
                             e.printStackTrace();
                     }
