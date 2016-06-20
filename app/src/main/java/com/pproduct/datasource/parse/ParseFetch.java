@@ -109,8 +109,8 @@ public class ParseFetch implements Fetch {
     }
 
     @Override
-    public void storeItems(BaseFetchResult<DataObject> baseFetchResult, final BoolCallback boolCallback) {
-        if (isOfflineStoreAvailable()) {
+    public void storeItems(BaseFetchResult<? extends DataObject> baseFetchResult, final BoolCallback boolCallback) {
+        if (!offlineStoreAvailable) {
             return;
         }
         final List<ParseObject> itemsToSave = new ArrayList<>();
