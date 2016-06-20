@@ -12,6 +12,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -162,7 +163,9 @@ public class ParseFetch implements Fetch {
         if (dataCallback == null) {
             throw new IllegalArgumentException("dataCallback cannot be null");
         }
-        Map<String, ?> params = cloudParamsProvider != null ? cloudParamsProvider.getCloudParams(paging) : null;
+        Map<String, ?> params = cloudParamsProvider != null
+                ? cloudParamsProvider.getCloudParams(paging)
+                : new HashMap<String, Object>();
         ParseCloud.callFunctionInBackground(cloudFuncName, params, new FunctionCallback<Object>() {
             @Override
             public void done(Object object, ParseException e) {
