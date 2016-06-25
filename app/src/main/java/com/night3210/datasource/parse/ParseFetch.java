@@ -1,4 +1,4 @@
-package com.pproduct.datasource.parse;
+package com.night3210.datasource.parse;
 
 import android.os.AsyncTask;
 import android.util.Pair;
@@ -17,12 +17,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.parse.SaveCallback;
-import com.pproduct.datasource.core.ListDataSource;
-import com.pproduct.datasource.core.fetch_result.BaseFetchResult;
-import com.pproduct.datasource.core.listeners.BoolCallback;
-import com.pproduct.datasource.core.listeners.DataCallback;
-import com.pproduct.datasource.core.listeners.DataObject;
-import com.pproduct.datasource.core.listeners.Fetch;
+import com.night3210.datasource.core.ListDataSource;
+import com.night3210.datasource.core.fetch_result.BaseFetchResult;
+import com.night3210.datasource.core.listeners.BoolCallback;
+import com.night3210.datasource.core.listeners.DataCallback;
+import com.night3210.datasource.core.listeners.DataObject;
+import com.night3210.datasource.core.listeners.Fetch;
 
 /**
  * Created by Developer on 2/12/2016.
@@ -34,11 +34,11 @@ public class ParseFetch implements Fetch {
     }
 
     public interface OnlineQueryProvider {
-        public ParseQuery<?> getQuery();
+        public ParseQuery<? extends DataObject> getQuery();
     }
 
     public interface OfflineQueryProvider {
-        public List<ParseQuery<?>> getOfflineQueries();
+        public List<ParseQuery<? extends DataObject>> getOfflineQueries();
     }
 
     // Call Query section
@@ -75,7 +75,7 @@ public class ParseFetch implements Fetch {
         if (offlineQueryProvider == null) {
             throw new IllegalStateException("You need to set offlineQueryProvider if offlineFetchAvailable is true");
         }
-        final List<ParseQuery<?>> queries = offlineQueryProvider.getOfflineQueries();
+        final List<ParseQuery<? extends DataObject>> queries = offlineQueryProvider.getOfflineQueries();
         new AsyncTask<Void, Void, Pair<List<Object>, Throwable>>() {
 
             @Override

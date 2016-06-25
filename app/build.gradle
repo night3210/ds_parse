@@ -21,6 +21,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.github.night3210:core_datasource:1.0.16'
+    compile 'com.github.night3210:core_datasource:1.1.0'
     compile 'com.parse:parse-android:1.13.0'
 }
