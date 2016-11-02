@@ -193,7 +193,7 @@ public class ParseFetch implements Fetch {
             query.setSkip(paging.getSkip());
             query.setLimit(paging.getLimit());
         }
-        query.findInBackground(new FindCallback() {
+        query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List objects, ParseException e) {
                 if (e != null) {
@@ -201,15 +201,6 @@ public class ParseFetch implements Fetch {
                     return;
                 }
                 dataCallback.onSuccess(objects);
-            }
-
-            @Override
-            public void done(Object o, Throwable throwable) {
-                if (throwable != null) {
-                    dataCallback.onError(throwable);
-                    return;
-                }
-                dataCallback.onSuccess(o);
             }
         });
     }
