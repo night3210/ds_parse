@@ -1,11 +1,14 @@
 package com.night3210.datasource.parse;
 
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
 import android.util.Pair;
 
+import com.night3210.datasource.core.LogUtils;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
+import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -30,15 +33,13 @@ import com.night3210.datasource.core.listeners.Fetch;
 public class ParseFetch implements Fetch {
 
     public interface CloudParamsProvider {
-        public Map<String, ?> getCloudParams(ListDataSource.Paging paging);
+        Map<String, ?> getCloudParams(ListDataSource.Paging paging);
     }
-
     public interface OnlineQueryProvider {
-        public ParseQuery<? extends DataObject> getQuery();
+        ParseQuery<? extends DataObject> getQuery();
     }
-
     public interface OfflineQueryProvider {
-        public List<ParseQuery<? extends DataObject>> getOfflineQueries();
+        List<ParseQuery<? extends DataObject>> getOfflineQueries();
     }
 
     // Call Query section
@@ -65,19 +66,16 @@ public class ParseFetch implements Fetch {
             fetchQuery(paging, dataCallback);
         }
     }
-
     @Override
     public void fetchOffline(final DataCallback dataCallback) {
         if (!offlineFetchAvailable) {
             return;
         }
-
         if (offlineQueryProvider == null) {
             throw new IllegalStateException("You need to set offlineQueryProvider if offlineFetchAvailable is true");
         }
         final List<ParseQuery<? extends DataObject>> queries = offlineQueryProvider.getOfflineQueries();
         new AsyncTask<Void, Void, Pair<List<Object>, Throwable>>() {
-
             @Override
             protected Pair<List<Object>, Throwable> doInBackground(Void... voids) {
                 List<Object> array = new ArrayList<>();
@@ -85,9 +83,10 @@ public class ParseFetch implements Fetch {
                 for (ParseQuery<?> query : queries) {
                     try {
                         List result = query.find();
-                        if (result != null) {
-                            array.addAll(result);
+                        if (result == null) {
+                            continue;
                         }
+                        array.addAll(result);
                     } catch (ParseException e) {
                         e.printStackTrace();
                         th = e;
@@ -95,7 +94,6 @@ public class ParseFetch implements Fetch {
                 }
                 return new Pair<>(array, th);
             }
-
             @Override
             protected void onPostExecute(Pair<List<Object>, Throwable> listThrowablePair) {
                 super.onPostExecute(listThrowablePair);
@@ -107,7 +105,6 @@ public class ParseFetch implements Fetch {
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
-
     @Override
     public void storeItems(BaseFetchResult<? extends DataObject> baseFetchResult, final BoolCallback boolCallback) {
         if (!offlineStoreAvailable) {
@@ -121,25 +118,9 @@ public class ParseFetch implements Fetch {
             storeItemsInternal(itemsToSave, boolCallback);
             return;
         }
-        fetchOffline(new DataCallback() {
+        ParseObject.unpinAllInBackground(pinName, new DeleteCallback() {
             @Override
-            public void onSuccess(Object o) {
-                if (o instanceof List) {
-                    List<ParseObject> objects = (List<ParseObject>)o;
-                    ParseObject.unpinAllInBackground(pinName, objects, new DeleteCallback() {
-
-                        @Override
-                        public void done(ParseException e) {
-                            storeItemsInternal(itemsToSave, boolCallback);
-                        }
-                    });
-                    return;
-                }
-                storeItemsInternal(itemsToSave, boolCallback);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
+            public void done(ParseException e) {
                 storeItemsInternal(itemsToSave, boolCallback);
             }
         });
